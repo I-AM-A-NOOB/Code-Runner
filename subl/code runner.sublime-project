@@ -1,0 +1,18 @@
+{
+	"folders":
+	[
+		{
+			"path": "D:\\Projects\\Project\\code runner",
+		}
+	],
+	"debugger_configurations":
+	[
+		{
+			"python": "C:\\ProgramData\\miniforge3\\python.exe",
+			"name": "Python: Current File",
+			"type": "python",
+			"request": "launch",
+			"program": "${file}"
+		},
+	],
+}
