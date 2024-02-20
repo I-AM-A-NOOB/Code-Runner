@@ -1,13 +1,15 @@
 import json
 from pathlib import Path
 import subprocess
-# import sys
-# using "pathlib" to get folder & file & filetype
+from rich.console import Console
+from rich.table import Table
 
-with open("filetype.json") as configure:
-    cfg = configure.read()
-    cfg = json.loads(cfg)
-print(cfg)
+fileTable = Table()
+commandTable = Table()
+console = Console(color_system="256", style=None)
+
+with open("filetype.json") as configure_file:
+    config = json.load(configure_file)
 # file = sys.argv[1].split(".")
 file_source = ".\\test\\a.cpp"
 file_source = str(Path(file_source).resolve())
@@ -16,25 +18,46 @@ file_name = str(Path(file_source).stem)
 file_type = str(Path(file_source).suffix)[1:]
 file_dir = str(Path(file_source).parent)
 exec_cmd = []
-print("file_type: "+file_type)
-print("file_dir:  "+file_dir)
 
-for i in cfg:
-    print(i)
-    for j in cfg[i]["filetype"]:
+fileTable.add_column("[bold]Item")
+fileTable.add_column("[red]Value")
+fileTable.add_row("File source", file_source)
+fileTable.add_row("File", file)
+fileTable.add_row("File name", file_name)
+fileTable.add_row("File type", file_type)
+fileTable.add_row("File dir", file_dir)
+console.print(fileTable)
+
+for i in config:
+    for j in config[i]["filetype"]:
         if j == file_type:
-            exec_cmd = cfg[i]["command"]
-            print(exec_cmd)
+            exec_cmd = config[i]["command"]
             break
-    if exec_cmd != []:
+    if exec_cmd:
         break
-# subprocess.call("cd \"%s\"" % file_locate)
-for i in exec_cmd:
-    cmd = i.replace("$$", "\\$\\")
-    cmd = cmd.replace("$file", file).replace("$name", file_name).replace("$type", file_type).replace("$path", file_dir)
-    cmd = cmd.replace("\\$\\", "$")
-    print(cmd)
-    cmd.replace("$dir", file_dir)
-    # print("powershell -Command \"& cd '%s' ; %s \"" % (file_dir, cmd))
-    subprocess.call("powershell -Command \"& cd '%s' ; %s \"" % (file_dir, cmd))
-    # subprocess.call("cmd -c \"cd \"%s\"\";\"%s\"" % (file_locate, cmd))
+
+commandTable.add_column("")
+commandTable.add_column("[bold]Command")
+if exec_cmd:
+    for i in range(len(exec_cmd)):
+        cmd = exec_cmd[i].replace("$$", "\n\n$\n\n")
+        cmd = (
+            cmd.replace("$file", file)
+            .replace("$name", file_name)
+            .replace("$type", file_type)
+            .replace("$path", file_dir)
+            .replace("$dir", file_dir)
+        )
+        cmd = cmd.replace("\n\n$\n\n", "$")
+        commandTable.add_row(str(i + 1), cmd)
+        exec_cmd[i] = cmd
+
+    console.print(commandTable)
+    for i in exec_cmd:
+        console.rule()
+        console.print(">", i, style="cyan")
+        subprocess.run(i, cwd=file_dir, shell=True)
+else:
+    console.print(
+        "No execution command found for file type: .", file_type, style="white on red"
+    )
