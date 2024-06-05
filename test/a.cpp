@@ -1,5 +1,7 @@
-#include<iostream>
-int main(){
-    printf("114514");
-    return 0;
+#include <iostream>
+int main() {
+  int a;
+  std::cout << "114514";
+  std::cin >> a;
+  return 0;
 }

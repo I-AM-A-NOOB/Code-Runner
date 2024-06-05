@@ -1,16 +1,24 @@
 {
-    "python": {
-        "filetype": [
-            "py",
-            "pyw"
-        ],
-        "command":["cat $file","python -u $file"]
-    },
-    "c++": {
-        "filetype": [
-            "cpp",
-            "cxx"
-        ],
-        "command":["g++ $file -o $name.exe", ".\\$name.exe"]
+    "debug": false,
+    "filetype": {
+        "python": {
+            "extension": [
+                "py",
+                "pyw"
+            ],
+            "command": [
+                "python -u \"$file\""
+            ]
+        },
+        "c++": {
+            "extension": [
+                "cpp",
+                "cxx"
+            ],
+            "command": [
+                "clang++ \"$file\" -o \"$name.exe\"",
+                ".\\\"$name.exe\""
+            ]
+        }
     }
 }
